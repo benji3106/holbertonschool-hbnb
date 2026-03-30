@@ -3,6 +3,7 @@ from flask_restx import Api
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from config import DevelopmentConfig
 
 
@@ -19,6 +20,17 @@ def create_app(config_class=DevelopmentConfig):
     jwt.init_app(app)
     db.init_app(app)
 
+    CORS(
+        app,
+        resources={
+            r"/api/*": {
+                "origins": [
+                    "http://localhost:8000",
+                    "http://127.0.0.1:8000"
+                ]
+            }
+        }
+    )
 
     from app.api.v1.users import api as users_ns
     from app.api.v1.amenities import api as amenities_ns
@@ -34,7 +46,6 @@ def create_app(config_class=DevelopmentConfig):
         doc='/'
     )
 
-    # Register namespaces
     api.add_namespace(users_ns, path='/api/v1/users')
     api.add_namespace(amenities_ns, path='/api/v1/amenities')
     api.add_namespace(places_ns, path='/api/v1/places')
