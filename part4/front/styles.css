@@ -190,3 +190,15 @@ form button:hover {
     margin-bottom: 10px;
     font-weight: bold;
 }
+#review-message {
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.success-message {
+    color: green;
+}
+
+.error-message {
+    color: red;
+}

@@ -56,6 +56,8 @@ def _place_payload_list(p):
     return {
         "id": p.id,
         "title": p.title,
+        "description": p.description,
+        "price": p.price,
         "latitude": p.latitude,
         "longitude": p.longitude
     }

@@ -12,49 +12,37 @@
         <img src="images/logo.png" alt="HBnB Logo" class="logo">
         <nav>
             <a href="index.html">Home</a>
-            <a href="login.html" class="login-button">Login</a>
+            <a href="login.html" id="login-link" class="login-button">Login</a>
         </nav>
     </header>
 
     <main>
-        <section class="place-details">
-            <h1>Cozy Apartment</h1>
-
-            <div class="place-info">
-                <p><strong>Host:</strong> John Doe</p>
-            </div>
-
-            <div class="place-info">
-                <p><strong>Price per night:</strong> $120</p>
-            </div>
-
-            <div class="place-info">
-                <p><strong>Description:</strong> A comfortable apartment in the city center, close to shops and public transport.</p>
-            </div>
-
-            <div class="place-info">
-                <p><strong>Amenities:</strong> Wi-Fi, Kitchen, Air Conditioning, Parking</p>
-            </div>
-
-            <a href="add_review.html" class="details-button">Add Review</a>
+        <section id="place-details" class="place-details">
+            <h1>Place Details</h1>
         </section>
 
         <section id="reviews">
             <h2>Reviews</h2>
+        </section>
 
-            <article class="review-card">
-                <h3>Review 1</h3>
-                <p><strong>User:</strong> Alice</p>
-                <p><strong>Rating:</strong> 5/5</p>
-                <p>Great place, very clean and well located.</p>
-            </article>
+        <section id="add-review" class="add-review">
+            <h2>Add a Review</h2>
+            <form id="review-form">
+                <label for="review-text">Review:</label>
+                <textarea id="review-text" name="review-text" required></textarea>
 
-            <article class="review-card">
-                <h3>Review 2</h3>
-                <p><strong>User:</strong> Bob</p>
-                <p><strong>Rating:</strong> 4/5</p>
-                <p>Nice apartment, quiet area, would stay again.</p>
-            </article>
+                <label for="rating">Rating:</label>
+                <select id="rating" name="rating" required>
+                    <option value="" disabled selected>-- Select a rating --</option>
+                    <option value="5">5 - Excellent</option>
+                    <option value="4">4 - Very Good</option>
+                    <option value="3">3 - Good</option>
+                    <option value="2">2 - Fair</option>
+                    <option value="1">1 - Poor</option>
+                </select>
+
+                <button type="submit">Submit</button>
+            </form>
         </section>
     </main>
 

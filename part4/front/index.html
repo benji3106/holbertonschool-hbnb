@@ -12,7 +12,7 @@
         <img src="images/logo.png" alt="HBnB Logo" class="logo">
         <nav>
             <a href="index.html">Home</a>
-            <a href="login.html" class="login-button">Login</a>
+            <a href="login.html" id="login-link" class="login-button">Login</a>
         </nav>
     </header>
 
@@ -21,32 +21,15 @@
             <h2>Filter by Price</h2>
             <label for="price-filter">Max Price:</label>
             <select id="price-filter">
-                <option value="100">$100</option>
-                <option value="200">$200</option>
-                <option value="300">$300</option>
-                <option value="500">$500</option>
+                <option value="10">10</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="all">All</option>
             </select>
         </section>
 
         <section id="places-list">
             <h2>Available Places</h2>
-            <article class="place-card">
-                <h2>Cozy Apartment</h2>
-                <p>Price per night: $120</p>
-                <a href="place.html" class="details-button">View Details</a>
-            </article>
-
-            <article class="place-card">
-                <h2>Beach House</h2>
-                <p>Price per night: $250</p>
-                <a href="place.html" class="details-button">View Details</a>
-            </article>
-
-            <article class="place-card">
-                <h2>Mountain Cabin</h2>
-                <p>Price per night: $180</p>
-                <a href="place.html" class="details-button">View Details</a>
-            </article>
         </section>
     </main>
 
