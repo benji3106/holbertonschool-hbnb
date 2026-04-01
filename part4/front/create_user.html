@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Place Details</title>
+    <title>Create User</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="images/icon.png">
 </head>
@@ -20,31 +20,25 @@
     </header>
 
     <main>
-        <section id="place-details" class="place-details">
-            <h1>Place Details</h1>
-        </section>
+        <section class="form-container" id="create-user-section">
+            <form id="create-user-form">
+                <h2>Create User</h2>
 
-        <section id="reviews">
-            <h2>Reviews</h2>
-        </section>
+                <label for="first-name">First Name:</label>
+                <input type="text" id="first-name" name="first-name" required>
 
-        <section id="add-review" class="add-review">
-            <h2>Add a Review</h2>
-            <form id="review-form">
-                <label for="review-text">Review:</label>
-                <textarea id="review-text" name="review-text" required></textarea>
+                <label for="last-name">Last Name:</label>
+                <input type="text" id="last-name" name="last-name" required>
 
-                <label for="rating">Rating:</label>
-                <select id="rating" name="rating" required>
-                    <option value="" disabled selected>-- Select a rating --</option>
-                    <option value="5">5 - Excellent</option>
-                    <option value="4">4 - Very Good</option>
-                    <option value="3">3 - Good</option>
-                    <option value="2">2 - Fair</option>
-                    <option value="1">1 - Poor</option>
-                </select>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
 
-                <button type="submit">Submit</button>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+
+                <p id="create-user-message"></p>
+
+                <button type="submit">Create User</button>
             </form>
         </section>
     </main>

@@ -8,21 +8,22 @@
     <link rel="icon" href="images/icon.png">
 </head>
 <body>
-
     <header>
-        <img src="images/logo.png" alt="HBnB Logo" class="logo">
+        <a href="index.html"><img src="images/logo.png" alt="HBnB Logo" class="logo"></a>
         <nav>
             <a href="index.html">Home</a>
-            <a href="login.html" class="login-button">Login</a>
+            <a href="create_place.html" id="create-place-link" class="login-button" style="display: none;">Create Place</a>
+            <a href="create_user.html" id="admin-link" class="login-button" style="display: none;">Create User</a>
+            <a href="login.html" id="login-link" class="login-button">Login</a>
+            <button id="logout-link" class="login-button" onclick="logout()" style="display: none;">Logout</button>
         </nav>
     </header>
 
     <main>
-        <section class="add-review">
-            
-            <!-- Identification du lieu -->
+        <section class="add-review" id="add-review-section">
             <h2>Add a Review</h2>
-            <p><strong>Place:</strong> Cozy Apartment</p>
+            <p id="place-name"><strong>Place:</strong> Loading...</p>
+            <p id="review-message"></p>
 
             <form id="review-form">
                 <label for="review">Your Review:</label>
@@ -30,7 +31,7 @@
 
                 <label for="rating">Rating:</label>
                 <select id="rating" name="rating" required>
-                    <option value="">-- Select a rating --</option>
+                    <option value="" disabled selected>-- Select a rating --</option>
                     <option value="5">5 - Excellent</option>
                     <option value="4">4 - Very Good</option>
                     <option value="3">3 - Good</option>

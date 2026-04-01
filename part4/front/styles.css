@@ -51,6 +51,42 @@ nav a {
     background-color: #ddd;
 }
 
+button.login-button {
+    cursor: pointer;
+    font-size: 1rem;
+    border: none;
+}
+
+.delete-button {
+    background-color: #c0392b;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-size: 1rem;
+}
+
+.delete-button:hover {
+    background-color: #e74c3c;
+}
+
+.amenities-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.amenity-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: normal;
+    cursor: pointer;
+}
+
 /* Main */
 main {
     padding: 2rem;

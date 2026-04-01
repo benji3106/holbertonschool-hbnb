@@ -1,6 +1,26 @@
 const API_URL = 'http://127.0.0.1:5000/api/v1';
 let allPlaces = [];
 
+function getTokenPayload(token) {
+    try {
+        const base64url = token.split('.')[1];
+        const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+        return JSON.parse(atob(base64));
+    } catch {
+        return null;
+    }
+}
+
+function isAdmin(token) {
+    const payload = getTokenPayload(token);
+    return payload && payload.is_admin === true;
+}
+
+function getCurrentUserId(token) {
+    const payload = getTokenPayload(token);
+    return payload ? payload.sub : null;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('login-form')) {
         setupLoginForm();
@@ -13,6 +33,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (document.getElementById('place-details')) {
         initPlaceDetailsPage();
+    }
+
+    if (document.getElementById('add-review-section')) {
+        initAddReviewPage();
+    }
+
+    if (document.getElementById('create-user-section')) {
+        initCreateUserPage();
+    }
+
+    if (document.getElementById('create-place-section')) {
+        initCreatePlacePage();
     }
 });
 
@@ -92,21 +124,34 @@ function setupLoginForm() {
 /* =========================
    INDEX
 ========================= */
-function checkAuthenticationIndex() {
-    const token = getCookie('token');
+function updateNavBar(token) {
     const loginLink = document.getElementById('login-link');
+    const adminLink = document.getElementById('admin-link');
+    const logoutLink = document.getElementById('logout-link');
+    const createPlaceLink = document.getElementById('create-place-link');
 
     if (!token) {
-        if (loginLink) {
-            loginLink.style.display = 'inline-block';
-        }
-        fetchPlaces(null);
+        if (loginLink) loginLink.style.display = 'inline-block';
+        if (adminLink) adminLink.style.display = 'none';
+        if (logoutLink) logoutLink.style.display = 'none';
+        if (createPlaceLink) createPlaceLink.style.display = 'none';
     } else {
-        if (loginLink) {
-            loginLink.style.display = 'none';
-        }
-        fetchPlaces(token);
+        if (loginLink) loginLink.style.display = 'none';
+        if (adminLink) adminLink.style.display = isAdmin(token) ? 'inline-block' : 'none';
+        if (logoutLink) logoutLink.style.display = 'inline-block';
+        if (createPlaceLink) createPlaceLink.style.display = 'inline-block';
     }
+}
+
+function logout() {
+    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    window.location.href = 'index.html';
+}
+
+function checkAuthenticationIndex() {
+    const token = getCookie('token');
+    updateNavBar(token);
+    fetchPlaces(token);
 }
 
 async function fetchPlaces(token) {
@@ -184,7 +229,6 @@ function setupPriceFilter() {
 ========================= */
 function initPlaceDetailsPage() {
     const token = getCookie('token');
-    const loginLink = document.getElementById('login-link');
     const addReviewSection = document.getElementById('add-review');
     const placeId = getPlaceIdFromURL();
 
@@ -193,23 +237,39 @@ function initPlaceDetailsPage() {
         return;
     }
 
-    if (!token) {
-        if (loginLink) {
-            loginLink.style.display = 'inline-block';
-        }
-        if (addReviewSection) {
-            addReviewSection.style.display = 'none';
-        }
-    } else {
-        if (loginLink) {
-            loginLink.style.display = 'none';
-        }
-        if (addReviewSection) {
-            addReviewSection.style.display = 'block';
-        }
+    updateNavBar(token);
+
+    if (addReviewSection) {
+        addReviewSection.style.display = token ? 'block' : 'none';
     }
 
     fetchPlaceDetails(token, placeId);
+
+    const reviewForm = document.getElementById('review-form');
+    if (reviewForm && token) {
+        reviewForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const reviewText = document.getElementById('review-text').value.trim();
+            const rating = parseInt(document.getElementById('rating').value, 10);
+
+            try {
+                const response = await submitReview(token, placeId, reviewText, rating);
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Review submitted successfully!');
+                    reviewForm.reset();
+                    fetchPlaceDetails(token, placeId);
+                } else {
+                    alert(data.error || 'Failed to submit review.');
+                }
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                alert('Unable to connect to the server.');
+            }
+        });
+    }
 }
 
 function getPlaceIdFromURL() {
@@ -249,6 +309,36 @@ function displayPlaceDetails(place) {
         return;
     }
 
+    const token = getCookie('token');
+    const currentUserId = getCurrentUserId(token);
+    const canDeletePlace = token && (isAdmin(token) || place.owner.id === currentUserId);
+
+    const deleteBtn = document.getElementById('delete-place-btn');
+    if (deleteBtn) {
+        if (canDeletePlace) {
+            deleteBtn.style.display = 'inline-block';
+            deleteBtn.onclick = async () => {
+                if (!confirm('Are you sure you want to delete this place?')) return;
+                try {
+                    const response = await fetch(`${API_URL}/places/${place.id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (response.ok) {
+                        window.location.href = 'index.html';
+                    } else {
+                        const data = await response.json();
+                        alert(data.error || 'Failed to delete place.');
+                    }
+                } catch (error) {
+                    alert('Unable to connect to the server.');
+                }
+            };
+        } else {
+            deleteBtn.style.display = 'none';
+        }
+    }
+
     const amenitiesHTML = place.amenities && place.amenities.length > 0
         ? place.amenities.map((amenity) => `<li>${amenity.name}</li>`).join('')
         : '<li>No amenities available.</li>';
@@ -276,25 +366,397 @@ function displayPlaceDetails(place) {
             <p><strong>Amenities:</strong></p>
             <ul>${amenitiesHTML}</ul>
         </div>
+
+        ${canDeletePlace ? `<button id="delete-place-btn" class="delete-button">Delete this place</button>` : ''}
     `;
 
+    if (canDeletePlace) {
+        document.getElementById('delete-place-btn').addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to delete this place?')) return;
+            try {
+                const response = await fetch(`${API_URL}/places/${place.id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    window.location.href = 'index.html';
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Failed to delete place.');
+                }
+            } catch (error) {
+                alert('Unable to connect to the server.');
+            }
+        });
+    }
+
     reviewsSection.innerHTML = '<h2>Reviews</h2>';
+
+    const admin = isAdmin(token);
 
     if (place.reviews && place.reviews.length > 0) {
         place.reviews.forEach((review, index) => {
             const reviewCard = document.createElement('article');
             reviewCard.className = 'review-card';
 
+            const canDelete = token && (admin || review.user_id === currentUserId);
+
             reviewCard.innerHTML = `
                 <h3>Review ${index + 1}</h3>
                 <p><strong>Rating:</strong> ${review.rating}/5</p>
                 <p>${review.text}</p>
-                <p><strong>User ID:</strong> ${review.user_id}</p>
+                <p><strong>By:</strong> ${review.user_name || review.user_id}</p>
+                ${canDelete ? `<button class="delete-button delete-review-btn" data-id="${review.id}">Delete</button>` : ''}
             `;
 
             reviewsSection.appendChild(reviewCard);
         });
+
+        reviewsSection.querySelectorAll('.delete-review-btn').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+                if (!confirm('Delete this review?')) return;
+
+                try {
+                    const response = await fetch(`${API_URL}/reviews/${btn.dataset.id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (response.ok) {
+                        const placeId = getPlaceIdFromURL();
+                        fetchPlaceDetails(token, placeId);
+                    } else {
+                        const data = await response.json();
+                        alert(data.error || 'Failed to delete review.');
+                    }
+                } catch (error) {
+                    console.error('Error deleting review:', error);
+                    alert('Unable to connect to the server.');
+                }
+            });
+        });
     } else {
         reviewsSection.innerHTML += '<p>No reviews yet.</p>';
     }
+}
+/* =========================
+   ADD REVIEW
+========================= */
+function initAddReviewPage() {
+    const token = checkAuthenticationForReviewPage();
+    const placeId = getPlaceIdFromURL();
+    const reviewForm = document.getElementById('review-form');
+
+    if (!token) {
+        return;
+    }
+
+    if (!placeId) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    loadPlaceName(placeId, token);
+
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const reviewText = document.getElementById('review').value.trim();
+            const rating = parseInt(document.getElementById('rating').value, 10);
+            const message = document.getElementById('review-message');
+
+            if (message) {
+                message.textContent = '';
+                message.className = '';
+            }
+
+            try {
+                const response = await submitReview(token, placeId, reviewText, rating);
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (message) {
+                        message.textContent = 'Review submitted successfully!';
+                        message.className = 'success-message';
+                    }
+                    reviewForm.reset();
+                } else {
+                    if (message) {
+                        message.textContent = data.error || 'Failed to submit review.';
+                        message.className = 'error-message';
+                    }
+                }
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                if (message) {
+                    message.textContent = 'Unable to connect to the server.';
+                    message.className = 'error-message';
+                }
+            }
+        });
+    }
+}
+
+function checkAuthenticationForReviewPage() {
+    const token = getCookie('token');
+
+    if (!token) {
+        window.location.href = 'index.html';
+        return null;
+    }
+
+    updateNavBar(token);
+    return token;
+}
+
+async function loadPlaceName(placeId, token) {
+    const placeNameElement = document.getElementById('place-name');
+
+    try {
+        const headers = {};
+
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(`${API_URL}/places/${placeId}`, {
+            method: 'GET',
+            headers: headers
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch place details');
+        }
+
+        const place = await response.json();
+
+        if (placeNameElement) {
+            placeNameElement.innerHTML = `<strong>Place:</strong> ${place.title}`;
+        }
+    } catch (error) {
+        console.error('Error loading place name:', error);
+        if (placeNameElement) {
+            placeNameElement.innerHTML = '<strong>Place:</strong> Unknown place';
+        }
+    }
+}
+
+/* =========================
+   CREATE USER (ADMIN)
+========================= */
+function initCreateUserPage() {
+    const token = getCookie('token');
+
+    if (!token || !isAdmin(token)) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    updateNavBar(token);
+
+    const form = document.getElementById('create-user-form');
+    if (!form) return;
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const firstName = document.getElementById('first-name').value.trim();
+        const lastName = document.getElementById('last-name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const message = document.getElementById('create-user-message');
+
+        if (message) {
+            message.textContent = '';
+            message.className = '';
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/users/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    first_name: firstName,
+                    last_name: lastName,
+                    email: email,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                if (message) {
+                    message.textContent = `User "${firstName} ${lastName}" created successfully!`;
+                    message.className = 'success-message';
+                }
+                form.reset();
+            } else {
+                if (message) {
+                    message.textContent = data.error || 'Failed to create user.';
+                    message.className = 'error-message';
+                }
+            }
+        } catch (error) {
+            console.error('Error creating user:', error);
+            if (message) {
+                message.textContent = 'Unable to connect to the server.';
+                message.className = 'error-message';
+            }
+        }
+    });
+}
+
+/* =========================
+   CREATE PLACE
+========================= */
+function initCreatePlacePage() {
+    const token = getCookie('token');
+
+    if (!token) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    updateNavBar(token);
+    fetchAmenities(token);
+
+    const form = document.getElementById('create-place-form');
+    if (!form) return;
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const title = document.getElementById('title').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const price = parseFloat(document.getElementById('price').value);
+        const latitude = parseFloat(document.getElementById('latitude').value);
+        const longitude = parseFloat(document.getElementById('longitude').value);
+        const message = document.getElementById('create-place-message');
+
+        const checkedAmenities = Array.from(
+            document.querySelectorAll('#amenities-list input[type="checkbox"]:checked')
+        ).map((cb) => cb.value);
+
+        if (message) {
+            message.textContent = '';
+            message.className = '';
+        }
+
+        if (isNaN(price) || price <= 0) {
+            if (message) {
+                message.textContent = 'Price must be a positive number (greater than 0).';
+                message.className = 'error-message';
+            }
+            return;
+        }
+        if (isNaN(latitude) || latitude < -90 || latitude > 90) {
+            if (message) {
+                message.textContent = 'Latitude must be a number between -90 and 90.';
+                message.className = 'error-message';
+            }
+            return;
+        }
+        if (isNaN(longitude) || longitude < -180 || longitude > 180) {
+            if (message) {
+                message.textContent = 'Longitude must be a number between -180 and 180.';
+                message.className = 'error-message';
+            }
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/places/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    title,
+                    description,
+                    price,
+                    latitude,
+                    longitude,
+                    amenities: checkedAmenities
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                if (message) {
+                    message.textContent = `Place "${title}" created successfully!`;
+                    message.className = 'success-message';
+                }
+                form.reset();
+                document.querySelectorAll('#amenities-list input[type="checkbox"]').forEach((cb) => {
+                    cb.checked = false;
+                });
+            } else {
+                if (message) {
+                    message.textContent = data.error || 'Failed to create place.';
+                    message.className = 'error-message';
+                }
+            }
+        } catch (error) {
+            console.error('Error creating place:', error);
+            if (message) {
+                message.textContent = 'Unable to connect to the server.';
+                message.className = 'error-message';
+            }
+        }
+    });
+}
+
+async function fetchAmenities(token) {
+    const amenitiesList = document.getElementById('amenities-list');
+    if (!amenitiesList) return;
+
+    try {
+        const response = await fetch(`${API_URL}/amenities/`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch amenities');
+
+        const amenities = await response.json();
+        amenitiesList.innerHTML = '';
+
+        if (amenities.length === 0) {
+            amenitiesList.innerHTML = '<p>No amenities available.</p>';
+            return;
+        }
+
+        amenities.forEach((amenity) => {
+            const label = document.createElement('label');
+            label.className = 'amenity-checkbox';
+            label.innerHTML = `
+                <input type="checkbox" value="${amenity.id}"> ${amenity.name}
+            `;
+            amenitiesList.appendChild(label);
+        });
+    } catch (error) {
+        console.error('Error fetching amenities:', error);
+        amenitiesList.innerHTML = '<p>Could not load amenities.</p>';
+    }
+}
+
+async function submitReview(token, placeId, reviewText, rating) {
+    return fetch(`${API_URL}/reviews/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            text: reviewText,
+            rating: rating,
+            place_id: placeId
+        })
+    });
 }

@@ -329,3 +329,10 @@ class HBnBFacade:
 
         self.place_repo.update(place_id, validated)
         return self.place_repo.get(place_id)
+
+    def delete_place(self, place_id):
+        place = self.place_repo.get(place_id)
+        if not place:
+            return False
+        self.place_repo.delete(place_id)
+        return True

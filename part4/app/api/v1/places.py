@@ -84,7 +84,8 @@ def _place_payload_detail(p):
                 "id": r.id,
                 "text": r.text,
                 "rating": r.rating,
-                "user_id": r.user.id
+                "user_id": r.user_id,
+                "user_name": f"{r.user.first_name} {r.user.last_name}" if r.user else "Unknown"
             }
             for r in getattr(p, "reviews", [])
         ]
@@ -174,6 +175,26 @@ class PlaceResource(Resource):
             return {"error": "Place not found"}, 404
 
         return _place_payload_detail(updated), 200
+
+    @api.response(200, 'Place deleted successfully')
+    @api.response(404, 'Place not found')
+    @api.response(403, 'Unauthorized action')
+    @api.response(401, 'Missing or invalid token')
+    @jwt_required()
+    def delete(self, place_id):
+        """Delete a place (admin or owner only)"""
+        current_user = get_jwt_identity()
+        is_admin = _is_admin()
+
+        place = facade.get_place(place_id)
+        if not place:
+            return {"error": "Place not found"}, 404
+
+        if not is_admin and place.owner.id != current_user:
+            return {"error": "Unauthorized action"}, 403
+
+        facade.delete_place(place_id)
+        return {"message": "Place deleted successfully"}, 200
 
 
 @api.route('/<place_id>/reviews')
