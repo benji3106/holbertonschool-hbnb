@@ -1,6 +1,26 @@
 const API_URL = 'http://127.0.0.1:5000/api/v1';
 let allPlaces = [];
 
+const PLACE_IMAGES = {
+    'cottage': 'images/FFXIV-Cottage.jpg',
+    'lavender': 'images/FFXIV-Lavender Beds Manor.jpg',
+    'goblet': 'images/FFXIV-Goblet Penthouse Suite.jpg',
+    'coerthas': 'images/FFXIV-Coerthas Highland Retreat.jpg',
+    'shirogane': 'images/FFXIV-Shirogane Riverside Inn.png',
+    'mor dhona': 'images/FFXIV-Mor Dhona.png',
+    'dravania': 'images/FFXIV-Dravania Sky Cabin.jpg',
+    "rhalgr": "images/FFXIV-Rhalgr's Reach Lodging.jpg",
+};
+
+function getPlaceImage(title) {
+    if (!title) return null;
+    const lower = title.toLowerCase();
+    for (const [keyword, img] of Object.entries(PLACE_IMAGES)) {
+        if (lower.includes(keyword)) return img;
+    }
+    return null;
+}
+
 function getTokenPayload(token) {
     try {
         const base64url = token.split('.')[1];
@@ -21,7 +41,47 @@ function getCurrentUserId(token) {
     return payload ? payload.sub : null;
 }
 
+function startTokenExpiryWatcher() {
+    const token = getCookie('token');
+    if (!token) return;
+
+    const payload = getTokenPayload(token);
+    if (!payload || !payload.exp) return;
+
+    const expiresAt = payload.exp * 1000;
+    const now = Date.now();
+    const delay = expiresAt - now;
+
+    if (delay <= 0) {
+        logout();
+        return;
+    }
+
+    setTimeout(() => {
+        logout();
+    }, delay);
+}
+
+function initLightbox() {
+    const lightbox = document.createElement('div');
+    lightbox.className = 'lightbox';
+    lightbox.innerHTML = '<img id="lightbox-img" src="" alt="">';
+    document.body.appendChild(lightbox);
+
+    lightbox.addEventListener('click', () => lightbox.classList.remove('active'));
+
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('place-card-image') || e.target.classList.contains('place-detail-image')) {
+            document.getElementById('lightbox-img').src = e.target.src;
+            lightbox.classList.add('active');
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    startTokenExpiryWatcher();
+    initLightbox();
+
     if (document.getElementById('login-form')) {
         setupLoginForm();
     }
@@ -185,17 +245,25 @@ function displayPlaces(places) {
         return;
     }
 
-    placesList.innerHTML = '<h2>Available Places</h2>';
+    placesList.innerHTML = '<h2>Available Estates</h2>';
+
+    if (places.length === 0) {
+        placesList.innerHTML += '<p style="color: #b0a890; text-align: center; width: 100%;">No estates found.</p>';
+        return;
+    }
 
     places.forEach((place) => {
         const placeCard = document.createElement('article');
         placeCard.className = 'place-card';
         placeCard.dataset.price = place.price;
+        placeCard.dataset.region = getRegionFromDescription(place.description);
 
+        const placeImage = getPlaceImage(place.title);
         placeCard.innerHTML = `
+            ${placeImage ? `<img src="${placeImage}" alt="${place.title}" class="place-card-image">` : ''}
             <h3>${place.title}</h3>
             <p>${place.description ? place.description : 'No description available.'}</p>
-            <p><strong>Price per night:</strong> $${place.price}</p>
+            <p><strong>Gil per night:</strong> ${place.price} gil</p>
             <a href="place.html?id=${place.id}" class="details-button">View Details</a>
         `;
 
@@ -203,25 +271,42 @@ function displayPlaces(places) {
     });
 }
 
+function getRegionFromDescription(description) {
+    if (!description) return '';
+    const match = description.match(/^\[([^\]]+)\]/);
+    if (match) return match[1];
+    const regions = ['La Noscea', 'The Black Shroud', 'Thanalan', 'Coerthas', 'Mor Dhona', 'Abalathia', 'Dravania', 'Gyr Abania', 'Othard', 'Hingashi'];
+    for (const region of regions) {
+        if (description.includes(region)) return region;
+    }
+    return '';
+}
+
+function getFilteredPlaces() {
+    const priceFilter = document.getElementById('price-filter');
+    const regionFilter = document.getElementById('region-filter');
+
+    const maxPrice = priceFilter && priceFilter.value !== 'all' ? parseFloat(priceFilter.value) : null;
+    const region = regionFilter ? regionFilter.value : 'all';
+
+    return allPlaces.filter((place) => {
+        const priceOk = maxPrice === null || place.price <= maxPrice;
+        const regionOk = region === 'all' || getRegionFromDescription(place.description) === region;
+        return priceOk && regionOk;
+    });
+}
+
 function setupPriceFilter() {
     const priceFilter = document.getElementById('price-filter');
+    const regionFilter = document.getElementById('region-filter');
 
-    if (!priceFilter) {
-        return;
+    if (priceFilter) {
+        priceFilter.addEventListener('change', () => displayPlaces(getFilteredPlaces()));
     }
 
-    priceFilter.addEventListener('change', (event) => {
-        const selectedValue = event.target.value;
-
-        if (selectedValue === 'all') {
-            displayPlaces(allPlaces);
-            return;
-        }
-
-        const maxPrice = parseFloat(selectedValue);
-        const filteredPlaces = allPlaces.filter((place) => place.price <= maxPrice);
-        displayPlaces(filteredPlaces);
-    });
+    if (regionFilter) {
+        regionFilter.addEventListener('change', () => displayPlaces(getFilteredPlaces()));
+    }
 }
 
 /* =========================
@@ -343,7 +428,12 @@ function displayPlaceDetails(place) {
         ? place.amenities.map((amenity) => `<li>${amenity.name}</li>`).join('')
         : '<li>No amenities available.</li>';
 
+    const placeImage = getPlaceImage(place.title);
+    const cleanDesc = place.description
+        ? place.description.replace(/^\[[^\]]+\]\s*/, '')
+        : 'No description available.';
     placeDetails.innerHTML = `
+        ${placeImage ? `<img src="${placeImage}" alt="${place.title}" class="place-detail-image">` : ''}
         <h1>${place.title}</h1>
 
         <div class="place-info">
@@ -351,11 +441,11 @@ function displayPlaceDetails(place) {
         </div>
 
         <div class="place-info">
-            <p><strong>Price per night:</strong> $${place.price}</p>
+            <p><strong>Gil per night:</strong> ${place.price} gil</p>
         </div>
 
         <div class="place-info">
-            <p><strong>Description:</strong> ${place.description ? place.description : 'No description available.'}</p>
+            <p><strong>Description:</strong> ${cleanDesc}</p>
         </div>
 
         <div class="place-info">
@@ -632,7 +722,9 @@ function initCreatePlacePage() {
         event.preventDefault();
 
         const title = document.getElementById('title').value.trim();
-        const description = document.getElementById('description').value.trim();
+        const region = document.getElementById('region').value;
+        const rawDescription = document.getElementById('description').value.trim();
+        const description = region ? `[${region}] ${rawDescription}` : rawDescription;
         const price = parseFloat(document.getElementById('price').value);
         const latitude = parseFloat(document.getElementById('latitude').value);
         const longitude = parseFloat(document.getElementById('longitude').value);

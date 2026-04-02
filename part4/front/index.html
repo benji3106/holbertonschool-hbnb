@@ -9,7 +9,10 @@
 </head>
 <body>
     <header>
-        <a href="index.html"><img src="images/logo.png" alt="HBnB Logo" class="logo"></a>
+        <div class="header-logo">
+            
+            <span class="header-title">EorzeaHBnB</span>
+        </div>
         <nav>
             <a href="index.html">Home</a>
             <a href="create_place.html" id="create-place-link" class="login-button" style="display: none;">Create Place</a>
@@ -21,18 +24,37 @@
 
     <main>
         <section id="filter">
-            <h2>Filter by Price</h2>
-            <label for="price-filter">Max Price:</label>
+            <h2>Filter</h2>
+            <label for="price-filter">Max Gil:</label>
             <select id="price-filter">
-                <option value="10">10</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-                <option value="all">All</option>
+                <option value="all">All prices</option>
+                <option value="10">Up to 10 gil</option>
+                <option value="50">Up to 50 gil</option>
+                <option value="100">Up to 100 gil</option>
+                <option value="150">Up to 150 gil</option>
+                <option value="200">Up to 200 gil</option>
+                <option value="300">Up to 300 gil</option>
+                <option value="500">Up to 500 gil</option>
+            </select>
+
+            <label for="region-filter" style="margin-left: 20px;">Region:</label>
+            <select id="region-filter">
+                <option value="all">All Regions</option>
+                <option value="La Noscea">La Noscea</option>
+                <option value="The Black Shroud">The Black Shroud</option>
+                <option value="Thanalan">Thanalan</option>
+                <option value="Coerthas">Coerthas</option>
+                <option value="Mor Dhona">Mor Dhona</option>
+                <option value="Abalathia">Abalathia</option>
+                <option value="Dravania">Dravania</option>
+                <option value="Gyr Abania">Gyr Abania</option>
+                <option value="Othard">Othard</option>
+                <option value="Hingashi">Hingashi</option>
             </select>
         </section>
 
         <section id="places-list">
-            <h2>Available Places</h2>
+            <h2>Available Estates</h2>
         </section>
     </main>
 

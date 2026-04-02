@@ -12,49 +12,72 @@ app = create_app()
 
 PLACES = [
     {
-        "title": "Cozy Studio in the City Center",
-        "description": "A bright and modern studio located in the heart of the city. Perfect for solo travelers or couples.",
-        "price": 75.0,
-        "latitude": 48.8566,
-        "longitude": 2.3522,
+        "title": "Mist Cottage - Sea Breeze Estate",
+        "description": "[La Noscea] A charming cottage perched above the Mist district, offering breathtaking views of the Rhotano Sea. Salt air, the sound of gulls, and golden sunsets await weary adventurers.",
+        "price": 120.0,
+        "latitude": 34.0,
+        "longitude": 135.0,
+        "amenities": ["Wi-Fi", "Swimming Pool"]
+    },
+    {
+        "title": "Lavender Beds Manor",
+        "description": "[The Black Shroud] A refined manor nestled among the lavender fields of the Black Shroud. Elementals whisper through the trees at dusk, and the scent of wildflowers fills every room.",
+        "price": 200.0,
+        "latitude": 35.5,
+        "longitude": 139.5,
         "amenities": ["Wi-Fi", "Air Conditioning"]
     },
     {
-        "title": "Charming Countryside Cottage",
-        "description": "A peaceful retreat in the countryside with stunning views. Ideal for a relaxing weekend getaway.",
-        "price": 120.0,
-        "latitude": 44.8378,
-        "longitude": -0.5792,
-        "amenities": ["Wi-Fi"]
-    },
-    {
-        "title": "Luxury Beachfront Villa",
-        "description": "Stunning villa right on the beach with private pool and panoramic sea views.",
-        "price": 350.0,
-        "latitude": 43.2965,
-        "longitude": 5.3698,
+        "title": "Goblet Penthouse Suite",
+        "description": "[Thanalan] A luxury penthouse atop a sandstone tower in the Goblet, with panoramic views of the Ul'dahn desert. Gilded furnishings, private terrace, and a rooftop pool.",
+        "price": 450.0,
+        "latitude": 25.0,
+        "longitude": 55.0,
         "amenities": ["Wi-Fi", "Swimming Pool", "Air Conditioning"]
     },
     {
-        "title": "Modern Loft with City View",
-        "description": "Stylish loft apartment on the 10th floor with breathtaking city views and all amenities.",
-        "price": 95.0,
-        "latitude": 45.7640,
-        "longitude": 4.8357,
+        "title": "Coerthas Highland Retreat",
+        "description": "[Coerthas] A stone stronghold converted into a cozy retreat in the snowfields of Coerthas. Roaring hearth, thick furs, and mulled Ishgardian wine included. Perfect after a hunt.",
+        "price": 180.0,
+        "latitude": 46.0,
+        "longitude": 7.5,
+        "amenities": ["Wi-Fi"]
+    },
+    {
+        "title": "Shirogane Riverside Inn",
+        "description": "[Hingashi] A traditional Far Eastern inn on the banks of the Shirogane waterway. Tatami floors, shoji screens, and a private onsen with garden view. Tranquility incarnate.",
+        "price": 260.0,
+        "latitude": 34.7,
+        "longitude": 135.5,
         "amenities": ["Wi-Fi", "Air Conditioning"]
     },
     {
-        "title": "Cozy Mountain Chalet",
-        "description": "Authentic wooden chalet in the mountains. Perfect for skiing in winter or hiking in summer.",
-        "price": 150.0,
-        "latitude": 45.9237,
-        "longitude": 6.8694,
+        "title": "Mor Dhona Crystal Loft",
+        "description": "[Mor Dhona] A unique loft built into the crystalline outcroppings of Mor Dhona. The crystals glow softly at night, casting prismatic light across the walls. Truly one of a kind.",
+        "price": 95.0,
+        "latitude": 46.5,
+        "longitude": 13.0,
+        "amenities": ["Wi-Fi"]
+    },
+    {
+        "title": "Dravania Sky Cabin",
+        "description": "[Dravania] A daring cabin suspended on the cliffs of Dravania, overlooking the Churning Mists below. Dragons soar past the balcony at dawn. Not for the faint of heart.",
+        "price": 310.0,
+        "latitude": 47.0,
+        "longitude": 15.0,
+        "amenities": ["Wi-Fi", "Air Conditioning"]
+    },
+    {
+        "title": "Rhalgr's Reach Lodging",
+        "description": "[Gyr Abania] A sturdy traveler's lodge in the heart of Gyr Abania. Simple but welcoming, with a common room full of stories, strong ale, and the warmth of Ala Mhigan hospitality.",
+        "price": 60.0,
+        "latitude": 41.0,
+        "longitude": 20.0,
         "amenities": ["Wi-Fi"]
     },
 ]
 
 with app.app_context():
-    # Get the admin user as owner
     admin = User.query.filter_by(is_admin=True).first()
     if not admin:
         print("No admin user found. Please create an admin user first.")
@@ -64,13 +87,11 @@ with app.app_context():
 
     created = 0
     for place_data in PLACES:
-        # Skip if place with same title already exists
         existing = Place.query.filter_by(title=place_data["title"]).first()
         if existing:
             print(f"  Skipping (already exists): {place_data['title']}")
             continue
 
-        # Find amenities by name
         amenities = []
         for amenity_name in place_data.get("amenities", []):
             amenity = Amenity.query.filter_by(name=amenity_name).first()
