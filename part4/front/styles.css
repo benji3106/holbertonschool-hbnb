@@ -155,6 +155,80 @@ h2 {
     justify-content: center;
 }
 
+.region-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-family: 'Cinzel', serif;
+    color: #f0e8d0;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+
+#pagination {
+    width: 100%;
+    text-align: center;
+    padding: 20px 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.pagination-info {
+    width: 100%;
+    color: #b0a890;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+}
+
+.pagination-btn {
+    background: linear-gradient(135deg, #c9a84c, #a07830);
+    color: #1a1020;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    border: 1px solid #c9a84c;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #e0c070, #c9a84c);
+    box-shadow: 0 0 10px rgba(201, 168, 76, 0.4);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+.pagination-btn.active {
+    background: linear-gradient(135deg, #e0c070, #c9a84c);
+    box-shadow: 0 0 10px rgba(201, 168, 76, 0.4);
+}
+
+.place-rating {
+    font-size: 0.9rem;
+    color: #c9a84c;
+    margin-bottom: 8px;
+}
+
+.place-rating.no-rating {
+    color: #7a7060;
+    font-style: italic;
+}
+
+.review-count {
+    color: #b0a890;
+    font-size: 0.8rem;
+}
+
 #places-list h2 {
     width: 100%;
     text-align: center;

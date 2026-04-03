@@ -292,7 +292,8 @@ class HBnBFacade:
             price=validated["price"],
             latitude=validated["latitude"],
             longitude=validated["longitude"],
-            owner_id=validated["owner_id"]
+            owner_id=validated["owner_id"],
+            image_url=place_data.get("image_url")
         )
 
         place.amenities = amenities

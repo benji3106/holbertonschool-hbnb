@@ -14,9 +14,10 @@
             <span class="header-title">EorzeaHBnB</span>
         </div>
         <nav>
-            <a href="index.html">Home</a>
+            <a href="index.html" class="login-button">Home</a>
             <a href="create_place.html" id="create-place-link" class="login-button" style="display: none;">Create Place</a>
             <a href="create_user.html" id="admin-link" class="login-button" style="display: none;">Create User</a>
+            <a href="profile.html" id="profile-link" class="login-button" style="display: none;">My Profile</a>
             <a href="login.html" id="login-link" class="login-button">Login</a>
             <button id="logout-link" class="login-button" onclick="logout()" style="display: none;">Logout</button>
         </nav>
@@ -25,16 +26,16 @@
     <main>
         <section id="filter">
             <h2>Filter</h2>
-            <label for="price-filter">Max Gil:</label>
+            <label for="price-filter">Min Gil:</label>
             <select id="price-filter">
                 <option value="all">All prices</option>
-                <option value="10">Up to 10 gil</option>
-                <option value="50">Up to 50 gil</option>
-                <option value="100">Up to 100 gil</option>
-                <option value="150">Up to 150 gil</option>
-                <option value="200">Up to 200 gil</option>
-                <option value="300">Up to 300 gil</option>
-                <option value="500">Up to 500 gil</option>
+                <option value="10">From 10 gil</option>
+                <option value="50">From 50 gil</option>
+                <option value="100">From 100 gil</option>
+                <option value="150">From 150 gil</option>
+                <option value="200">From 200 gil</option>
+                <option value="300">From 300 gil</option>
+                <option value="500">From 500 gil</option>
             </select>
 
             <label for="region-filter" style="margin-left: 20px;">Region:</label>

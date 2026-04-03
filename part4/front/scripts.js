@@ -1,5 +1,20 @@
 const API_URL = 'http://127.0.0.1:5000/api/v1';
 let allPlaces = [];
+const PLACES_PER_PAGE = 6;
+let currentPage = 1;
+
+const REGION_COLORS = {
+    'La Noscea':        '#1a6b8a',
+    'The Black Shroud': '#2d6b3a',
+    'Thanalan':         '#8a5a1a',
+    'Coerthas':         '#5a7a9a',
+    'Mor Dhona':        '#6a3a8a',
+    'Abalathia':        '#4a5a6a',
+    'Dravania':         '#3a3a7a',
+    'Gyr Abania':       '#8a2a2a',
+    'Othard':           '#7a2a4a',
+    'Hingashi':         '#8a4a6a',
+};
 
 const PLACE_IMAGES = {
     'cottage': 'images/FFXIV-Cottage.jpg',
@@ -106,6 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('create-place-section')) {
         initCreatePlacePage();
     }
+
+    if (document.getElementById('profile-section')) {
+        initProfilePage();
+    }
 });
 
 function getCookie(name) {
@@ -189,17 +208,20 @@ function updateNavBar(token) {
     const adminLink = document.getElementById('admin-link');
     const logoutLink = document.getElementById('logout-link');
     const createPlaceLink = document.getElementById('create-place-link');
+    const profileLink = document.getElementById('profile-link');
 
     if (!token) {
         if (loginLink) loginLink.style.display = 'inline-block';
         if (adminLink) adminLink.style.display = 'none';
         if (logoutLink) logoutLink.style.display = 'none';
         if (createPlaceLink) createPlaceLink.style.display = 'none';
+        if (profileLink) profileLink.style.display = 'none';
     } else {
         if (loginLink) loginLink.style.display = 'none';
         if (adminLink) adminLink.style.display = isAdmin(token) ? 'inline-block' : 'none';
         if (logoutLink) logoutLink.style.display = 'inline-block';
         if (createPlaceLink) createPlaceLink.style.display = 'inline-block';
+        if (profileLink) profileLink.style.display = 'inline-block';
     }
 }
 
@@ -241,27 +263,44 @@ async function fetchPlaces(token) {
 
 function displayPlaces(places) {
     const placesList = document.getElementById('places-list');
-    if (!placesList) {
-        return;
-    }
+    if (!placesList) return;
 
-    placesList.innerHTML = '<h2>Available Estates</h2>';
+    const totalPages = Math.ceil(places.length / PLACES_PER_PAGE);
+    if (currentPage > totalPages) currentPage = 1;
+
+    const start = (currentPage - 1) * PLACES_PER_PAGE;
+    const paginated = places.slice(start, start + PLACES_PER_PAGE);
+
+    placesList.innerHTML = `<h2>Available Estates</h2>`;
 
     if (places.length === 0) {
         placesList.innerHTML += '<p style="color: #b0a890; text-align: center; width: 100%;">No estates found.</p>';
         return;
     }
 
-    places.forEach((place) => {
+    paginated.forEach((place) => {
         const placeCard = document.createElement('article');
         placeCard.className = 'place-card';
         placeCard.dataset.price = place.price;
-        placeCard.dataset.region = getRegionFromDescription(place.description);
 
-        const placeImage = getPlaceImage(place.title);
+        const region = getRegionFromDescription(place.description);
+        placeCard.dataset.region = region;
+
+        const placeImage = place.image_url || getPlaceImage(place.title);
+        const ratingHTML = place.avg_rating
+            ? `<p class="place-rating">⭐ ${place.avg_rating}/5 <span class="review-count">(${place.review_count} review${place.review_count > 1 ? 's' : ''})</span></p>`
+            : `<p class="place-rating no-rating">No reviews yet</p>`;
+
+        const regionColor = REGION_COLORS[region] || '#3a3a5a';
+        const regionBadge = region
+            ? `<span class="region-badge" style="background:${regionColor}">${region}</span>`
+            : '';
+
         placeCard.innerHTML = `
             ${placeImage ? `<img src="${placeImage}" alt="${place.title}" class="place-card-image">` : ''}
             <h3>${place.title}</h3>
+            ${regionBadge}
+            ${ratingHTML}
             <p>${place.description ? place.description : 'No description available.'}</p>
             <p><strong>Gil per night:</strong> ${place.price} gil</p>
             <a href="place.html?id=${place.id}" class="details-button">View Details</a>
@@ -269,6 +308,38 @@ function displayPlaces(places) {
 
         placesList.appendChild(placeCard);
     });
+
+    renderPagination(places.length, totalPages);
+}
+
+function renderPagination(total, totalPages) {
+    let pagination = document.getElementById('pagination');
+    if (!pagination) {
+        pagination = document.createElement('div');
+        pagination.id = 'pagination';
+        document.getElementById('places-list').after(pagination);
+    }
+
+    if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+    }
+
+    let html = `<p class="pagination-info">${total} estates — Page ${currentPage} / ${totalPages}</p>`;
+    html += `<button class="pagination-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">← Prev</button>`;
+
+    for (let i = 1; i <= totalPages; i++) {
+        html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+    }
+
+    html += `<button class="pagination-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">Next →</button>`;
+    pagination.innerHTML = html;
+}
+
+function changePage(page) {
+    currentPage = page;
+    displayPlaces(getFilteredPlaces());
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function getRegionFromDescription(description) {
@@ -286,11 +357,11 @@ function getFilteredPlaces() {
     const priceFilter = document.getElementById('price-filter');
     const regionFilter = document.getElementById('region-filter');
 
-    const maxPrice = priceFilter && priceFilter.value !== 'all' ? parseFloat(priceFilter.value) : null;
+    const minPrice = priceFilter && priceFilter.value !== 'all' ? parseFloat(priceFilter.value) : null;
     const region = regionFilter ? regionFilter.value : 'all';
 
     return allPlaces.filter((place) => {
-        const priceOk = maxPrice === null || place.price <= maxPrice;
+        const priceOk = minPrice === null || place.price >= minPrice;
         const regionOk = region === 'all' || getRegionFromDescription(place.description) === region;
         return priceOk && regionOk;
     });
@@ -301,11 +372,11 @@ function setupPriceFilter() {
     const regionFilter = document.getElementById('region-filter');
 
     if (priceFilter) {
-        priceFilter.addEventListener('change', () => displayPlaces(getFilteredPlaces()));
+        priceFilter.addEventListener('change', () => { currentPage = 1; displayPlaces(getFilteredPlaces()); });
     }
 
     if (regionFilter) {
-        regionFilter.addEventListener('change', () => displayPlaces(getFilteredPlaces()));
+        regionFilter.addEventListener('change', () => { currentPage = 1; displayPlaces(getFilteredPlaces()); });
     }
 }
 
@@ -428,7 +499,7 @@ function displayPlaceDetails(place) {
         ? place.amenities.map((amenity) => `<li>${amenity.name}</li>`).join('')
         : '<li>No amenities available.</li>';
 
-    const placeImage = getPlaceImage(place.title);
+    const placeImage = place.image_url || getPlaceImage(place.title);
     const cleanDesc = place.description
         ? place.description.replace(/^\[[^\]]+\]\s*/, '')
         : 'No description available.';
@@ -725,6 +796,7 @@ function initCreatePlacePage() {
         const region = document.getElementById('region').value;
         const rawDescription = document.getElementById('description').value.trim();
         const description = region ? `[${region}] ${rawDescription}` : rawDescription;
+        const imageUrl = document.getElementById('image-url').value.trim();
         const price = parseFloat(document.getElementById('price').value);
         const latitude = parseFloat(document.getElementById('latitude').value);
         const longitude = parseFloat(document.getElementById('longitude').value);
@@ -774,6 +846,7 @@ function initCreatePlacePage() {
                     price,
                     latitude,
                     longitude,
+                    image_url: imageUrl || null,
                     amenities: checkedAmenities
                 })
             });
@@ -801,6 +874,63 @@ function initCreatePlacePage() {
                 message.textContent = 'Unable to connect to the server.';
                 message.className = 'error-message';
             }
+        }
+    });
+}
+
+/* =========================
+   PROFILE
+========================= */
+function initProfilePage() {
+    const token = getCookie('token');
+    if (!token) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    updateNavBar(token);
+    const userId = getCurrentUserId(token);
+
+    fetch(`${API_URL}/users/${userId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(r => r.json())
+    .then(user => {
+        document.getElementById('first-name').value = user.first_name;
+        document.getElementById('last-name').value = user.last_name;
+        document.getElementById('email').value = user.email;
+    });
+
+    document.getElementById('profile-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const message = document.getElementById('profile-message');
+        message.textContent = '';
+        message.className = '';
+
+        try {
+            const response = await fetch(`${API_URL}/users/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    first_name: document.getElementById('first-name').value.trim(),
+                    last_name: document.getElementById('last-name').value.trim()
+                })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                message.textContent = 'Profile updated successfully!';
+                message.className = 'success-message';
+            } else {
+                message.textContent = data.error || 'Failed to update profile.';
+                message.className = 'error-message';
+            }
+        } catch (error) {
+            message.textContent = 'Unable to connect to the server.';
+            message.className = 'error-message';
         }
     });
 }

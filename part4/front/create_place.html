@@ -14,9 +14,10 @@
             <span class="header-title">EorzeaHBnB</span>
         </div>
         <nav>
-            <a href="index.html">Home</a>
+            <a href="index.html" class="login-button">Home</a>
             <a href="create_place.html" id="create-place-link" class="login-button" style="display: none;">Create Place</a>
             <a href="create_user.html" id="admin-link" class="login-button" style="display: none;">Create User</a>
+            <a href="profile.html" id="profile-link" class="login-button" style="display: none;">My Profile</a>
             <a href="login.html" id="login-link" class="login-button">Login</a>
             <button id="logout-link" class="login-button" onclick="logout()" style="display: none;">Logout</button>
         </nav>
@@ -47,6 +48,9 @@
                     <option value="Othard">Othard</option>
                     <option value="Hingashi">Hingashi</option>
                 </select>
+
+                <label for="image-url">Image URL <span style="font-weight:normal; font-size:0.8rem;">(optional)</span>:</label>
+                <input type="url" id="image-url" name="image-url" placeholder="https://...">
 
                 <label for="price">Gil per night:</label>
                 <input type="number" id="price" name="price" min="0.01" step="0.01" required>

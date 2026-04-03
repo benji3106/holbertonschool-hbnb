@@ -32,6 +32,7 @@ place_input_model = api.model('PlaceInput', {
     'price': fields.Float(required=True, description='Price per night'),
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
+    'image_url': fields.String(description='URL of the place image'),
     'amenities': fields.List(
         fields.String,
         required=False,
@@ -53,13 +54,18 @@ def _place_payload_created(p):
 
 
 def _place_payload_list(p):
+    ratings = [r.rating for r in p.reviews if r.rating is not None]
+    avg_rating = round(sum(ratings) / len(ratings), 1) if ratings else None
     return {
         "id": p.id,
         "title": p.title,
         "description": p.description,
         "price": p.price,
         "latitude": p.latitude,
-        "longitude": p.longitude
+        "longitude": p.longitude,
+        "image_url": p.image_url,
+        "avg_rating": avg_rating,
+        "review_count": len(ratings)
     }
 
 
@@ -72,6 +78,7 @@ def _place_payload_detail(p):
         "price": p.price,
         "latitude": p.latitude,
         "longitude": p.longitude,
+        "image_url": p.image_url,
         "owner": {
             "id": owner.id,
             "first_name": owner.first_name,
