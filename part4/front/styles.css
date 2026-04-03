@@ -1,0 +1,551 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap');
+
+/* Reset de base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Lato', sans-serif;
+}
+
+/* Page générale */
+body {
+    background-color: #0e1e30;
+    background-image:
+        radial-gradient(ellipse at top, #162840 0%, #0e1e30 70%);
+    color: #e8e0d0;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* Header */
+header {
+    background: linear-gradient(180deg, #1a4060 0%, #122e48 50%, #0e1e30 100%);
+    border-bottom: 2px solid #c9a84c;
+    padding: 20px 30px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-title {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #c9a84c;
+    letter-spacing: 0.3em;
+    text-shadow: 0 0 20px rgba(201, 168, 76, 0.8), 0 0 40px rgba(201, 168, 76, 0.4);
+}
+
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+nav a {
+    color: #e8e0d0;
+    text-decoration: none;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+}
+
+nav a:hover {
+    color: #c9a84c;
+}
+
+.login-button {
+    background: linear-gradient(135deg, #c9a84c, #a07830);
+    color: #1a1020;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    border: 1px solid #c9a84c;
+    transition: all 0.2s;
+}
+
+.login-button:hover {
+    background: linear-gradient(135deg, #e0c070, #c9a84c);
+    box-shadow: 0 0 10px rgba(201, 168, 76, 0.4);
+}
+
+button.login-button {
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+/* Main */
+main {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Footer */
+footer {
+    background: linear-gradient(0deg, #122e48 0%, #0e1e30 100%);
+    border-top: 2px solid #c9a84c;
+    color: #a09070;
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+}
+
+/* Titres */
+h1, h2, h3 {
+    font-family: 'Cinzel', serif;
+    color: #c9a84c;
+    letter-spacing: 0.05em;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+/* Filtre */
+#filter {
+    margin-bottom: 25px;
+    background: rgba(201, 168, 76, 0.05);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 8px;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#filter h2 {
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+#price-filter,
+#region-filter {
+    padding: 8px 12px;
+    margin-left: 5px;
+    background-color: #0e1e30;
+    color: #e8e0d0;
+    border: 1px solid #c9a84c;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Liste des lieux */
+#places-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    justify-content: center;
+}
+
+.region-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-family: 'Cinzel', serif;
+    color: #f0e8d0;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+
+#pagination {
+    width: 100%;
+    text-align: center;
+    padding: 20px 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.pagination-info {
+    width: 100%;
+    color: #b0a890;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+}
+
+.pagination-btn {
+    background: linear-gradient(135deg, #c9a84c, #a07830);
+    color: #1a1020;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    border: 1px solid #c9a84c;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #e0c070, #c9a84c);
+    box-shadow: 0 0 10px rgba(201, 168, 76, 0.4);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+.pagination-btn.active {
+    background: linear-gradient(135deg, #e0c070, #c9a84c);
+    box-shadow: 0 0 10px rgba(201, 168, 76, 0.4);
+}
+
+.place-rating {
+    font-size: 0.9rem;
+    color: #c9a84c;
+    margin-bottom: 8px;
+}
+
+.place-rating.no-rating {
+    color: #7a7060;
+    font-style: italic;
+}
+
+.review-count {
+    color: #b0a890;
+    font-size: 0.8rem;
+}
+
+#places-list h2 {
+    width: 100%;
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    color: #c9a84c;
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    letter-spacing: 0.1em;
+}
+
+/* Lightbox */
+.lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.lightbox.active {
+    display: flex;
+}
+
+.lightbox img {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 6px;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+}
+
+.place-card-image {
+    width: calc(100% + 40px);
+    height: 160px;
+    object-fit: cover;
+    border-radius: 6px 6px 0 0;
+    display: block;
+    margin: -20px -20px 15px -20px;
+    cursor: pointer;
+}
+
+.place-detail-image {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    display: block;
+    cursor: pointer;
+}
+
+/* Cartes des lieux */
+.place-card {
+    background: linear-gradient(145deg, #162840, #0e1e30);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: 8px;
+    padding: 20px;
+    width: 270px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(201, 168, 76, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.place-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(201, 168, 76, 0.15);
+    border-color: rgba(201, 168, 76, 0.6);
+}
+
+.place-card h3 {
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.place-card p {
+    margin-bottom: 12px;
+    color: #b0a890;
+    font-size: 0.9rem;
+}
+
+.details-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #c9a84c, #a07830);
+    color: #1a1020;
+    padding: 8px 14px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+}
+
+.details-button:hover {
+    background: linear-gradient(135deg, #e0c070, #c9a84c);
+    box-shadow: 0 0 10px rgba(201, 168, 76, 0.4);
+}
+
+/* Détails d'un lieu */
+.place-details {
+    background: linear-gradient(145deg, #162840, #0e1e30);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.place-details h1 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.3);
+    padding-bottom: 15px;
+}
+
+.place-info {
+    margin-bottom: 15px;
+    color: #b0a890;
+}
+
+.place-info strong {
+    color: #c9a84c;
+}
+
+.place-info ul {
+    list-style: none;
+    padding-left: 10px;
+}
+
+.place-info ul li::before {
+    content: '✦ ';
+    color: #c9a84c;
+    font-size: 0.7rem;
+}
+
+/* Avis */
+#reviews {
+    margin-top: 30px;
+}
+
+.review-card {
+    background: linear-gradient(145deg, #162840, #0e1e30);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.review-card h3 {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.review-card p {
+    color: #b0a890;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+}
+
+.review-card strong {
+    color: #c9a84c;
+}
+
+/* Formulaires */
+.form-container,
+.add-review {
+    background: linear-gradient(145deg, #162840, #0e1e30);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: 8px;
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form h2 {
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 1.3rem;
+}
+
+form label {
+    margin-bottom: 6px;
+    font-weight: 700;
+    color: #c9a84c;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+}
+
+form input,
+form textarea,
+form select {
+    padding: 10px 14px;
+    margin-bottom: 18px;
+    background-color: #091520;
+    color: #e8e0d0;
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: 4px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+form input:focus,
+form textarea:focus,
+form select:focus {
+    outline: none;
+    border-color: #c9a84c;
+    box-shadow: 0 0 8px rgba(201, 168, 76, 0.2);
+}
+
+form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+form select option {
+    background-color: #091520;
+}
+
+form button {
+    background: linear-gradient(135deg, #c9a84c, #a07830);
+    color: #1a1020;
+    border: none;
+    padding: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    transition: all 0.2s;
+    margin-top: 5px;
+}
+
+form button:hover {
+    background: linear-gradient(135deg, #e0c070, #c9a84c);
+    box-shadow: 0 0 15px rgba(201, 168, 76, 0.4);
+}
+
+/* Bouton delete */
+.delete-button {
+    background: linear-gradient(135deg, #8b1a1a, #c0392b);
+    color: #fff;
+    border: 1px solid #c0392b;
+    padding: 10px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+}
+
+.delete-button:hover {
+    background: linear-gradient(135deg, #c0392b, #e74c3c);
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.4);
+}
+
+/* Messages */
+#error-message {
+    color: #e74c3c;
+    margin-bottom: 10px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+#review-message {
+    margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.success-message {
+    color: #c9a84c;
+}
+
+.error-message {
+    color: #e74c3c;
+}
+
+/* Amenities checkboxes */
+.amenities-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.amenity-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: normal;
+    cursor: pointer;
+    color: #b0a890;
+    font-size: 0.9rem;
+}
+
+.amenity-checkbox input[type="checkbox"] {
+    accent-color: #c9a84c;
+    margin-bottom: 0;
+    padding: 0;
+    width: 16px;
+    height: 16px;
+}
+
+/* Section add-review dans place.html */
+.add-review {
+    margin-top: 30px;
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Review</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="images/icon.png">
+</head>
+<body>
+    <header>
+        <div class="header-logo">
+            
+            <span class="header-title">EorzeaHBnB</span>
+        </div>
+        <nav>
+            <a href="index.html" class="login-button">Home</a>
+            <a href="create_place.html" id="create-place-link" class="login-button" style="display: none;">Create Place</a>
+            <a href="create_user.html" id="admin-link" class="login-button" style="display: none;">Create User</a>
+            <a href="profile.html" id="profile-link" class="login-button" style="display: none;">My Profile</a>
+            <a href="login.html" id="login-link" class="login-button">Login</a>
+            <button id="logout-link" class="login-button" onclick="logout()" style="display: none;">Logout</button>
+        </nav>
+    </header>
+
+    <main>
+        <section class="add-review" id="add-review-section">
+            <h2>Add a Review</h2>
+            <p id="place-name"><strong>Place:</strong> Loading...</p>
+            <p id="review-message"></p>
+
+            <form id="review-form">
+                <label for="review">Your Review:</label>
+                <textarea id="review" name="review" required></textarea>
+
+                <label for="rating">Rating:</label>
+                <select id="rating" name="rating" required>
+                    <option value="" disabled selected>-- Select a rating --</option>
+                    <option value="5">5 - Excellent</option>
+                    <option value="4">4 - Very Good</option>
+                    <option value="3">3 - Good</option>
+                    <option value="2">2 - Fair</option>
+                    <option value="1">1 - Poor</option>
+                </select>
+
+                <button type="submit">Submit Review</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>All rights reserved.</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body>
+</html>

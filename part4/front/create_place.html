@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Place</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="images/icon.png">
+</head>
+<body>
+    <header>
+        <div class="header-logo">
+            
+            <span class="header-title">EorzeaHBnB</span>
+        </div>
+        <nav>
+            <a href="index.html" class="login-button">Home</a>
+            <a href="create_place.html" id="create-place-link" class="login-button" style="display: none;">Create Place</a>
+            <a href="create_user.html" id="admin-link" class="login-button" style="display: none;">Create User</a>
+            <a href="profile.html" id="profile-link" class="login-button" style="display: none;">My Profile</a>
+            <a href="login.html" id="login-link" class="login-button">Login</a>
+            <button id="logout-link" class="login-button" onclick="logout()" style="display: none;">Logout</button>
+        </nav>
+    </header>
+
+    <main>
+        <section class="form-container" id="create-place-section">
+            <form id="create-place-form">
+                <h2>Create a Place</h2>
+
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required>
+
+                <label for="description">Description:</label>
+                <textarea id="description" name="description"></textarea>
+
+                <label for="region">Region:</label>
+                <select id="region" name="region">
+                    <option value="">-- No region --</option>
+                    <option value="La Noscea">La Noscea</option>
+                    <option value="The Black Shroud">The Black Shroud</option>
+                    <option value="Thanalan">Thanalan</option>
+                    <option value="Coerthas">Coerthas</option>
+                    <option value="Mor Dhona">Mor Dhona</option>
+                    <option value="Abalathia">Abalathia</option>
+                    <option value="Dravania">Dravania</option>
+                    <option value="Gyr Abania">Gyr Abania</option>
+                    <option value="Othard">Othard</option>
+                    <option value="Hingashi">Hingashi</option>
+                </select>
+
+                <label for="image-url">Image URL <span style="font-weight:normal; font-size:0.8rem;">(optional)</span>:</label>
+                <input type="url" id="image-url" name="image-url" placeholder="https://...">
+
+                <label for="price">Gil per night:</label>
+                <input type="number" id="price" name="price" min="0.01" step="0.01" required>
+
+                <label for="latitude">Latitude:</label>
+                <input type="number" id="latitude" name="latitude" min="-90" max="90" step="any" required>
+
+                <label for="longitude">Longitude:</label>
+                <input type="number" id="longitude" name="longitude" min="-180" max="180" step="any" required>
+
+                <label>Amenities:</label>
+                <div id="amenities-list" class="amenities-checkboxes">
+                    <p>Loading amenities...</p>
+                </div>
+
+                <p id="create-place-message"></p>
+
+                <button type="submit">Create Place</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>All rights reserved.</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body>
+</html>

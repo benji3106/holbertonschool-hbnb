@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List of Places</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="images/icon.png">
+</head>
+<body>
+    <header>
+        <div class="header-logo">
+            
+            <span class="header-title">EorzeaHBnB</span>
+        </div>
+        <nav>
+            <a href="index.html" class="login-button">Home</a>
+            <a href="create_place.html" id="create-place-link" class="login-button" style="display: none;">Create Place</a>
+            <a href="create_user.html" id="admin-link" class="login-button" style="display: none;">Create User</a>
+            <a href="profile.html" id="profile-link" class="login-button" style="display: none;">My Profile</a>
+            <a href="login.html" id="login-link" class="login-button">Login</a>
+            <button id="logout-link" class="login-button" onclick="logout()" style="display: none;">Logout</button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="filter">
+            <h2>Filter</h2>
+            <label for="price-filter">Min Gil:</label>
+            <select id="price-filter">
+                <option value="all">All prices</option>
+                <option value="10">From 10 gil</option>
+                <option value="50">From 50 gil</option>
+                <option value="100">From 100 gil</option>
+                <option value="150">From 150 gil</option>
+                <option value="200">From 200 gil</option>
+                <option value="300">From 300 gil</option>
+                <option value="500">From 500 gil</option>
+            </select>
+
+            <label for="region-filter" style="margin-left: 20px;">Region:</label>
+            <select id="region-filter">
+                <option value="all">All Regions</option>
+                <option value="La Noscea">La Noscea</option>
+                <option value="The Black Shroud">The Black Shroud</option>
+                <option value="Thanalan">Thanalan</option>
+                <option value="Coerthas">Coerthas</option>
+                <option value="Mor Dhona">Mor Dhona</option>
+                <option value="Abalathia">Abalathia</option>
+                <option value="Dravania">Dravania</option>
+                <option value="Gyr Abania">Gyr Abania</option>
+                <option value="Othard">Othard</option>
+                <option value="Hingashi">Hingashi</option>
+            </select>
+        </section>
+
+        <section id="places-list">
+            <h2>Available Estates</h2>
+        </section>
+    </main>
+
+    <footer>
+        <p>All rights reserved.</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
